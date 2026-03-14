@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { generateProject, getAvailableTemplates, getTemplateInfo } from '../templates/generator';
 
 interface InitOptions {
   template: string;
@@ -9,100 +10,76 @@ interface InitOptions {
 export function initCommand(name: string = 'heartbeat-project', options: InitOptions) {
   // Handle empty string as name
   const projectName = name || 'heartbeat-project';
-  const projectDir = path.join(options.directory, projectName);
-  
+  const templateName = options.template || 'default';
+  const targetDir = options.directory || process.cwd();
+
   console.log(`🚀 Inicializando proyecto: ${projectName}`);
-  console.log(`📁 Directorio: ${projectDir}`);
-  console.log(`📋 Plantilla: ${options.template}`);
+  console.log(`📁 Directorio: ${targetDir}`);
+  console.log(`📋 Plantilla: ${templateName}`);
 
-  // Crear estructura de directorios
-  const directories = [
-    projectDir,
-    path.join(projectDir, 'src'),
-    path.join(projectDir, 'templates'),
-    path.join(projectDir, 'docs'),
-  ];
-
-  for (const dir of directories) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+  // Verificar que la plantilla existe
+  const templateInfo = getTemplateInfo(templateName);
+  if (!templateInfo) {
+    console.log(`\n❌ Plantilla '${templateName}' no encontrada.`);
+    console.log('\nPlantillas disponibles:');
+    for (const t of getAvailableTemplates()) {
+      const info = getTemplateInfo(t);
+      console.log(`  - ${t}: ${info?.description}`);
     }
+    process.exit(1);
   }
 
-  // Crear archivo de configuración de heartbeat
-  const heartbeatConfig = {
-    name: projectName,
-    version: '0.1.0',
-    heartbeat: {
-      interval: 300000, // 5 minutos
-      maxRetries: 3,
-      timeout: 60000,
-    },
-    ollama: {
-      enabled: true,
-      baseUrl: 'http://localhost:11434',
-      model: 'llama3',
-    },
-    logging: {
-      level: 'info',
-      file: 'heartbeat.log',
-    },
-  };
+  console.log(`   Descripción: ${templateInfo.description}`);
 
-  fs.writeFileSync(
-    path.join(projectDir, 'heartbeat.config.json'),
-    JSON.stringify(heartbeatConfig, null, 2)
-  );
+  // Generar proyecto
+  const result = generateProject(projectName, templateName, targetDir);
 
-  // Crear GOALS.md inicial
-  const goalsContent = `# GOALS.md - ${projectName}
+  if (!result.success) {
+    console.log('\n❌ Error al crear el proyecto:');
+    for (const err of result.errors) {
+      console.log(`   - ${err}`);
+    }
+    process.exit(1);
+  }
 
-## Fase Actual: Inicialización
-
-### Objetivo Principal
-
-Establecer la infraestructura base del proyecto.
-
-### Metas
-
-- [ ] Configurar entorno de desarrollo
-- [ ] Crear estructura de archivos
-- [ ] Documentar arquitectura
-
----
-*Creado: ${new Date().toISOString().split('T')[0]}*
-`;
-
-  fs.writeFileSync(path.join(projectDir, 'GOALS.md'), goalsContent);
-
-  // Crear HEARTBEAT_COUNTER.md
-  const counterContent = `# HEARTBEAT_COUNTER.md
-
-Contador de heartbeats para ${projectName}.
-
-## Estado Actual
-
-**Contador:** 1
-
-## Historial
-
-| # | Fecha | Modo | Acción |
-|---|------|------|--------|
-| 1 | ${new Date().toISOString().split('T')[0]} | A | Inicialización del proyecto |
-
----
-*Actualizado automáticamente.*
-`;
-
-  fs.writeFileSync(path.join(projectDir, 'HEARTBEAT_COUNTER.md'), counterContent);
-
-  console.log('✅ Proyecto inicializado correctamente');
+  console.log('\n✅ Proyecto inicializado correctamente');
   console.log('   Archivos creados:');
-  console.log('   - heartbeat.config.json');
-  console.log('   - GOALS.md');
-  console.log('   - HEARTBEAT_COUNTER.md');
-  console.log('');
-  console.log('Para comenzar:');
-  console.log(`  cd ${projectName}`);
-  console.log('  heartbeat run');
+  for (const file of result.files) {
+    console.log(`   - ${file}`);
+  }
+
+  // Mostrar instrucciones específicas según la plantilla
+  console.log('\n📖 Para comenzar:');
+  console.log(`   cd ${projectName}`);
+  
+  if (templateName === 'nodejs') {
+    console.log('   npm install');
+    console.log('   npm run build');
+    console.log('   npm test');
+  } else if (templateName === 'python') {
+    console.log('   python -m venv venv');
+    console.log('   source venv/bin/activate  # Linux/Mac');
+    console.log('   pip install -e ".[dev]"');
+    console.log('   pytest');
+  }
+  
+  console.log('   heartbeat run');
+  
+  // Mostrar próximo paso
+  console.log('\n📝 Próximo paso:');
+  console.log('   Edita GOALS.md para definir tus objetivos.');
+  console.log('   Ejecuta `heartbeat status` para ver el estado actual.');
+}
+
+export function listTemplatesCommand() {
+  console.log('📋 Plantillas disponibles:\n');
+  
+  for (const name of getAvailableTemplates()) {
+    const info = getTemplateInfo(name);
+    console.log(`  ${name}`);
+    console.log(`    ${info?.description}`);
+    console.log('');
+  }
+  
+  console.log('Uso: heartbeat init -t <plantilla> <nombre-proyecto>');
 }

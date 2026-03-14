@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { initCommand } from './commands/init';
+import { initCommand, listTemplatesCommand } from './commands/init';
 import { runCommand } from './commands/run';
 import { statusCommand } from './commands/status';
 import { askCommand } from './commands/ask';
@@ -51,5 +51,10 @@ program
   .option('--ollama-model <model>', 'Establecer modelo por defecto')
   .option('--check', 'Verificar conexión con Ollama')
   .action(configCommand);
+
+program
+  .command('templates')
+  .description('Lista las plantillas disponibles para inicialización')
+  .action(listTemplatesCommand);
 
 program.parse();
