@@ -4,6 +4,8 @@ import { Command } from 'commander';
 import { initCommand } from './commands/init';
 import { runCommand } from './commands/run';
 import { statusCommand } from './commands/status';
+import { askCommand } from './commands/ask';
+import { configCommand } from './commands/config';
 
 const program = new Command();
 
@@ -32,5 +34,22 @@ program
   .description('Muestra el estado actual del sistema de heartbeats')
   .option('-j, --json', 'Salida en formato JSON', false)
   .action(statusCommand);
+
+program
+  .command('ask <prompt>')
+  .description('Envía un prompt a Ollama y muestra la respuesta')
+  .option('-m, --model <model>', 'Modelo a usar', 'llama3')
+  .option('-v, --verbose', 'Mostrar información detallada', false)
+  .action(askCommand);
+
+program
+  .command('config')
+  .description('Gestiona la configuración de heartbeat y Ollama')
+  .option('--list', 'Listar configuración actual')
+  .option('--set <key=value>', 'Establecer un valor de configuración')
+  .option('--ollama-url <url>', 'Establecer URL de Ollama')
+  .option('--ollama-model <model>', 'Establecer modelo por defecto')
+  .option('--check', 'Verificar conexión con Ollama')
+  .action(configCommand);
 
 program.parse();

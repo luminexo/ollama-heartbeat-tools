@@ -2,6 +2,12 @@
 export { initCommand } from './commands/init';
 export { runCommand } from './commands/run';
 export { statusCommand } from './commands/status';
+export { askCommand } from './commands/ask';
+export { configCommand } from './commands/config';
+
+// Ollama client
+export { OllamaClient } from './ollama/client';
+export type { OllamaModel, OllamaGenerateRequest, OllamaGenerateResponse, OllamaStatus } from './ollama/types';
 
 // Types
 export interface HeartbeatConfig {
