@@ -10,7 +10,10 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "echo 'Add linting configuration'",
+    "prepare": "npm run build"
   },
   "keywords": [
     "heartbeat",
@@ -25,7 +28,13 @@
     "url": "https://github.com/luminexo/ollama-heartbeat-tools.git"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "commander": "^14.0.3"
   }
 }

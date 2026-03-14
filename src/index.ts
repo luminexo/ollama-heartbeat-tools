@@ -1,8 +1,24 @@
-/**
- * Ollama Heartbeat Tools
- * Main entry point
- */
+// CLI exports
+export { initCommand } from './commands/init';
+export { runCommand } from './commands/run';
+export { statusCommand } from './commands/status';
 
-export const VERSION = '0.1.0';
-
-console.log('Ollama Heartbeat Tools v' + VERSION);
+// Types
+export interface HeartbeatConfig {
+  name: string;
+  version: string;
+  heartbeat: {
+    interval: number;
+    maxRetries: number;
+    timeout: number;
+  };
+  ollama: {
+    enabled: boolean;
+    baseUrl: string;
+    model: string;
+  };
+  logging: {
+    level: string;
+    file: string;
+  };
+}
