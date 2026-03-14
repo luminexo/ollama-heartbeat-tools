@@ -1,0 +1,31 @@
+{
+  "name": "ollama-heartbeat-tools",
+  "version": "0.1.0",
+  "description": "Toolkit de utilidades para sistemas de heartbeat automatizados usando Ollama",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "heartbeat": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "keywords": [
+    "heartbeat",
+    "ollama",
+    "automation",
+    "cli"
+  ],
+  "author": "Luminexo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luminexo/ollama-heartbeat-tools.git"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
