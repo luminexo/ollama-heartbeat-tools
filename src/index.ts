@@ -4,6 +4,7 @@ export { runCommand } from './commands/run';
 export { statusCommand } from './commands/status';
 export { askCommand } from './commands/ask';
 export { configCommand } from './commands/config';
+export { validateCommand } from './commands/validate';
 
 // Ollama client
 export { OllamaClient } from './ollama/client';

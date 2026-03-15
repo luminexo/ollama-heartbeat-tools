@@ -6,6 +6,7 @@ import { runCommand } from './commands/run';
 import { statusCommand } from './commands/status';
 import { askCommand } from './commands/ask';
 import { configCommand } from './commands/config';
+import { validateCommand } from './commands/validate';
 
 const program = new Command();
 
@@ -51,6 +52,13 @@ program
   .option('--ollama-model <model>', 'Establecer modelo por defecto')
   .option('--check', 'Verificar conexión con Ollama')
   .action(configCommand);
+
+program
+  .command('validate')
+  .description('Valida los archivos de configuración de heartbeat')
+  .option('-v, --verbose', 'Mostrar información detallada', false)
+  .option('-f, --fix', 'Intentar corregir errores automáticamente', false)
+  .action(validateCommand);
 
 program
   .command('templates')
