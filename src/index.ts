@@ -5,10 +5,15 @@ export { statusCommand } from './commands/status';
 export { askCommand } from './commands/ask';
 export { configCommand } from './commands/config';
 export { validateCommand } from './commands/validate';
+export { remoteCommand } from './commands/remote';
 
 // Ollama client
 export { OllamaClient } from './ollama/client';
 export type { OllamaModel, OllamaGenerateRequest, OllamaGenerateResponse, OllamaStatus } from './ollama/types';
+
+// Remote config
+export { RemoteConfigLoader, formatBytes } from './config/remote';
+export type { RemoteConfigOptions, RemoteConfigResult } from './config/remote';
 
 // Types
 export interface HeartbeatConfig {

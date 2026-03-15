@@ -7,6 +7,7 @@ import { statusCommand } from './commands/status';
 import { askCommand } from './commands/ask';
 import { configCommand } from './commands/config';
 import { validateCommand } from './commands/validate';
+import { remoteCommand } from './commands/remote';
 
 const program = new Command();
 
@@ -64,5 +65,20 @@ program
   .command('templates')
   .description('Lista las plantillas disponibles para inicialización')
   .action(listTemplatesCommand);
+
+program
+  .command('remote')
+  .description('Gestiona configuración remota de heartbeat')
+  .option('--url <url>', 'URL de configuración remota')
+  .option('--github <repo>', 'Repositorio GitHub (owner/repo)')
+  .option('--branch <name>', 'Branch de GitHub', 'main')
+  .option('--file <path>', 'Archivo en repo', 'heartbeat.config.json')
+  .option('--pull', 'Descargar y guardar configuración', false)
+  .option('--merge', 'Mezclar configuración remota con local', false)
+  .option('--cache', 'Mostrar caché de configuración', false)
+  .option('--clear-cache', 'Limpiar caché', false)
+  .option('--validate', 'Validar URL remota', false)
+  .option('-v, --verbose', 'Mostrar información detallada', false)
+  .action(remoteCommand);
 
 program.parse();
