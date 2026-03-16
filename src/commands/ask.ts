@@ -1,5 +1,6 @@
 import { OllamaClient } from '../ollama/client';
 import { OllamaStatus } from '../ollama/types';
+import { logger } from '../logger';
 
 interface AskOptions {
   model: string;
@@ -10,32 +11,33 @@ interface AskOptions {
 export async function askCommand(prompt: string, options: AskOptions) {
   const client = new OllamaClient();
 
-  console.log('🦙 Consultando Ollama...');
+  logger.info('🦙 Consultando Ollama...');
   
   if (options.verbose) {
-    console.log(`   Modelo: ${options.model}`);
-    console.log(`   Prompt: ${prompt.substring(0, 50)}${prompt.length > 50 ? '...' : ''}`);
+    logger.debug(`   Modelo: ${options.model}`);
+    logger.debug(`   Prompt: ${prompt.substring(0, 50)}${prompt.length > 50 ? '...' : ''}`);
   }
 
   // Verificar disponibilidad
   const status: OllamaStatus = await client.getStatus();
   
   if (!status.available) {
-    console.error(`❌ Ollama no disponible: ${status.error}`);
-    console.log('💡 Asegúrate de que Ollama está instalado y el servidor está corriendo:');
-    console.log('   ollama serve');
+    logger.error(`Ollama no disponible: ${status.error}`);
+    logger.info('💡 Asegúrate de que Ollama está instalado y el servidor está corriendo:');
+    logger.info('   ollama serve');
     process.exit(1);
   }
 
   // Verificar que el modelo existe
   const modelExists = status.models.some(m => m.name === options.model || m.name.startsWith(options.model + ':'));
   if (!modelExists) {
-    console.error(`❌ Modelo "${options.model}" no encontrado`);
-    console.log('📋 Modelos disponibles:');
+    logger.error(`Modelo "${options.model}" no encontrado`);
+    logger.info('📋 Modelos disponibles:');
     status.models.forEach(m => {
-      console.log(`   - ${m.name} (${OllamaClient.formatBytes(m.size)})`);
+      logger.info(`   - ${m.name} (${OllamaClient.formatBytes(m.size)})`);
     });
-    console.log(`\n💡 Descarga el modelo con: ollama pull ${options.model}`);
+    logger.info('');
+    logger.info(`💡 Descarga el modelo con: ollama pull ${options.model}`);
     process.exit(1);
   }
 
@@ -44,13 +46,13 @@ export async function askCommand(prompt: string, options: AskOptions) {
     const response = await client.ask(prompt, options.model);
     const duration = Date.now() - startTime;
 
-    console.log('\n' + response);
+    logger.info('\n' + response);
     
     if (options.verbose) {
-      console.log(`\n⏱️ Tiempo: ${OllamaClient.formatDuration(duration)}`);
+      logger.debug(`\n⏱️ Tiempo: ${OllamaClient.formatDuration(duration)}`);
     }
   } catch (error) {
-    console.error(`❌ Error: ${error}`);
+    logger.error(`Error: ${error}`);
     process.exit(1);
   }
 }

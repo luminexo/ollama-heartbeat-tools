@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { logger } from '../logger';
 
 interface ValidateOptions {
   verbose: boolean;
@@ -21,7 +22,8 @@ interface ValidationResult {
 }
 
 export function validateCommand(options: ValidateOptions) {
-  console.log('🔍 Validando configuración de heartbeat...\n');
+  logger.info('🔍 Validando configuración de heartbeat...');
+  logger.info('');
   
   const result: ValidationResult = {
     valid: true,
@@ -325,47 +327,47 @@ function validateCounterMd(projectDir: string, result: ValidationResult) {
 }
 
 function printResults(result: ValidationResult, verbose: boolean) {
-  console.log('📁 Archivos verificados:');
+  logger.info('📁 Archivos verificados:');
   for (const file of result.checked) {
-    console.log(`   ✓ ${file}`);
+    logger.success(`${file}`);
   }
-  console.log('');
+  logger.info('');
   
   // Errores
   if (result.errors.length > 0) {
-    console.log('❌ Errores encontrados:');
+    logger.error('Errores encontrados:');
     for (const err of result.errors) {
       const lineInfo = err.line ? ` (línea ${err.line})` : '';
-      console.log(`   • ${err.file}${lineInfo}: ${err.message}`);
+      logger.error(`   ${err.file}${lineInfo}: ${err.message}`);
     }
-    console.log('');
+    logger.info('');
   }
   
   // Warnings
   if (result.warnings.length > 0) {
-    console.log('⚠️ Advertencias:');
+    logger.warn('Advertencias:');
     for (const warn of result.warnings) {
       const lineInfo = warn.line ? ` (línea ${warn.line})` : '';
-      console.log(`   • ${warn.file}${lineInfo}: ${warn.message}`);
+      logger.warn(`   ${warn.file}${lineInfo}: ${warn.message}`);
     }
-    console.log('');
+    logger.info('');
   }
   
   // Resumen
   if (result.valid && result.errors.length === 0) {
     if (result.warnings.length === 0) {
-      console.log('✅ Validación completada: Todo correcto');
+      logger.success('Validación completada: Todo correcto');
     } else {
-      console.log(`✅ Validación completada: Correcto con ${result.warnings.length} advertencia(s)`);
+      logger.success(`Validación completada: Correcto con ${result.warnings.length} advertencia(s)`);
     }
   } else {
-    console.log(`❌ Validación fallida: ${result.errors.length} error(es) encontrado(s)`);
+    logger.error(`Validación fallida: ${result.errors.length} error(es) encontrado(s)`);
   }
   
   if (verbose) {
-    console.log('\n📊 Resumen:');
-    console.log(`   Archivos verificados: ${result.checked.length}`);
-    console.log(`   Errores: ${result.errors.length}`);
-    console.log(`   Advertencias: ${result.warnings.length}`);
+    logger.info('📊 Resumen:');
+    logger.info(`   Archivos verificados: ${result.checked.length}`);
+    logger.info(`   Errores: ${result.errors.length}`);
+    logger.info(`   Advertencias: ${result.warnings.length}`);
   }
 }

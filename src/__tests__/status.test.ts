@@ -87,15 +87,15 @@ describe('status command', () => {
   it('should warn when no config file found', () => {
     mockExistsSync.mockReturnValue(false);
 
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
     
     statusCommand({ json: false });
 
-    expect(consoleSpy).toHaveBeenCalledWith(
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
       expect.stringContaining('No se encontró')
     );
     
-    consoleSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
   });
 
   it('should detect git repository status', () => {

@@ -1,5 +1,5 @@
 // CLI exports
-export { initCommand } from './commands/init';
+export { initCommand, listTemplatesCommand } from './commands/init';
 export { runCommand } from './commands/run';
 export { statusCommand } from './commands/status';
 export { askCommand } from './commands/ask';
@@ -14,6 +14,11 @@ export type { OllamaModel, OllamaGenerateRequest, OllamaGenerateResponse, Ollama
 // Remote config
 export { RemoteConfigLoader, formatBytes } from './config/remote';
 export type { RemoteConfigOptions, RemoteConfigResult } from './config/remote';
+
+// Logger
+export { Logger, logger } from './logger';
+export type { LogLevel, LoggerOptions } from './logger';
+export { setLevel, setFile, setJsonMode, setColors, setTimestamps, configure, debug, info, warn, error, success, progress } from './logger';
 
 // Types
 export interface HeartbeatConfig {

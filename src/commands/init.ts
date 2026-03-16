@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { generateProject, getAvailableTemplates, getTemplateInfo } from '../templates/generator';
+import { logger } from '../logger';
 
 interface InitOptions {
   template: string;
@@ -13,73 +14,74 @@ export function initCommand(name: string = 'heartbeat-project', options: InitOpt
   const templateName = options.template || 'default';
   const targetDir = options.directory || process.cwd();
 
-  console.log(`🚀 Inicializando proyecto: ${projectName}`);
-  console.log(`📁 Directorio: ${targetDir}`);
-  console.log(`📋 Plantilla: ${templateName}`);
+  logger.info(`🚀 Inicializando proyecto: ${projectName}`);
+  logger.debug(`Directorio: ${targetDir}`);
+  logger.debug(`Plantilla: ${templateName}`);
 
   // Verificar que la plantilla existe
   const templateInfo = getTemplateInfo(templateName);
   if (!templateInfo) {
-    console.log(`\n❌ Plantilla '${templateName}' no encontrada.`);
-    console.log('\nPlantillas disponibles:');
+    logger.error(`Plantilla '${templateName}' no encontrada.`);
+    logger.info('Plantillas disponibles:');
     for (const t of getAvailableTemplates()) {
       const info = getTemplateInfo(t);
-      console.log(`  - ${t}: ${info?.description}`);
+      logger.info(`  - ${t}: ${info?.description}`);
     }
     process.exit(1);
   }
 
-  console.log(`   Descripción: ${templateInfo.description}`);
+  logger.debug(`Descripción: ${templateInfo.description}`);
 
   // Generar proyecto
   const result = generateProject(projectName, templateName, targetDir);
 
   if (!result.success) {
-    console.log('\n❌ Error al crear el proyecto:');
+    logger.error('Error al crear el proyecto:');
     for (const err of result.errors) {
-      console.log(`   - ${err}`);
+      logger.error(`   - ${err}`);
     }
     process.exit(1);
   }
 
-  console.log('\n✅ Proyecto inicializado correctamente');
-  console.log('   Archivos creados:');
+  logger.success('Proyecto inicializado correctamente');
+  logger.debug('Archivos creados:');
   for (const file of result.files) {
-    console.log(`   - ${file}`);
+    logger.debug(`   - ${file}`);
   }
 
   // Mostrar instrucciones específicas según la plantilla
-  console.log('\n📖 Para comenzar:');
-  console.log(`   cd ${projectName}`);
+  logger.info('📖 Para comenzar:');
+  logger.info(`   cd ${projectName}`);
   
   if (templateName === 'nodejs') {
-    console.log('   npm install');
-    console.log('   npm run build');
-    console.log('   npm test');
+    logger.info('   npm install');
+    logger.info('   npm run build');
+    logger.info('   npm test');
   } else if (templateName === 'python') {
-    console.log('   python -m venv venv');
-    console.log('   source venv/bin/activate  # Linux/Mac');
-    console.log('   pip install -e ".[dev]"');
-    console.log('   pytest');
+    logger.info('   python -m venv venv');
+    logger.info('   source venv/bin/activate  # Linux/Mac');
+    logger.info('   pip install -e ".[dev]"');
+    logger.info('   pytest');
   }
   
-  console.log('   heartbeat run');
+  logger.info('   heartbeat run');
   
   // Mostrar próximo paso
-  console.log('\n📝 Próximo paso:');
-  console.log('   Edita GOALS.md para definir tus objetivos.');
-  console.log('   Ejecuta `heartbeat status` para ver el estado actual.');
+  logger.info('📝 Próximo paso:');
+  logger.info('   Edita GOALS.md para definir tus objetivos.');
+  logger.info('   Ejecuta `heartbeat status` para ver el estado actual.');
 }
 
 export function listTemplatesCommand() {
-  console.log('📋 Plantillas disponibles:\n');
+  logger.info('📋 Plantillas disponibles:');
+  logger.info('');
   
   for (const name of getAvailableTemplates()) {
     const info = getTemplateInfo(name);
-    console.log(`  ${name}`);
-    console.log(`    ${info?.description}`);
-    console.log('');
+    logger.info(`  ${name}`);
+    logger.info(`    ${info?.description}`);
+    logger.info('');
   }
   
-  console.log('Uso: heartbeat init -t <plantilla> <nombre-proyecto>');
+  logger.info('Uso: heartbeat init -t <plantilla> <nombre-proyecto>');
 }

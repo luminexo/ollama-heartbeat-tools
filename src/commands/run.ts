@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import { logger } from '../logger';
 
 interface RunOptions {
   config: string;
@@ -27,13 +28,13 @@ interface HeartbeatConfig {
 }
 
 export async function runCommand(options: RunOptions) {
-  console.log('💓 Ejecutando heartbeat...');
+  logger.info('💓 Ejecutando heartbeat...');
   
   const configPath = path.resolve(options.config);
   
   if (!fs.existsSync(configPath)) {
-    console.error(`❌ Archivo de configuración no encontrado: ${configPath}`);
-    console.log('💡 Usa "heartbeat init" para crear un nuevo proyecto');
+    logger.error(`Archivo de configuración no encontrado: ${configPath}`);
+    logger.info('💡 Usa "heartbeat init" para crear un nuevo proyecto');
     process.exit(1);
   }
 
@@ -41,15 +42,15 @@ export async function runCommand(options: RunOptions) {
   try {
     config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
   } catch (error) {
-    console.error('❌ Error al leer el archivo de configuración');
+    logger.error('Error al leer el archivo de configuración');
     process.exit(1);
   }
 
   if (options.verbose) {
-    console.log('📋 Configuración cargada:');
-    console.log(`   Proyecto: ${config.name}`);
-    console.log(`   Versión: ${config.version}`);
-    console.log(`   Ollama: ${config.ollama.enabled ? 'habilitado' : 'deshabilitado'}`);
+    logger.debug('📋 Configuración cargada:');
+    logger.debug(`   Proyecto: ${config.name}`);
+    logger.debug(`   Versión: ${config.version}`);
+    logger.debug(`   Ollama: ${config.ollama.enabled ? 'habilitado' : 'deshabilitado'}`);
   }
 
   // Leer contador actual
@@ -69,8 +70,8 @@ export async function runCommand(options: RunOptions) {
   const mode = isOdd ? 'A' : 'B';
   const modeName = isOdd ? 'Dominio de GitHub' : 'Exploración de Proyectos';
 
-  console.log(`📊 Heartbeat #${newCount}`);
-  console.log(`🔄 Modo: ${mode} - ${modeName}`);
+  logger.info(`📊 Heartbeat #${newCount}`);
+  logger.info(`🔄 Modo: ${mode} - ${modeName}`);
 
   // Actualizar contador
   const timestamp = new Date().toISOString().split('T')[0];
@@ -98,57 +99,57 @@ export async function runCommand(options: RunOptions) {
     await runModeB(config, options.verbose);
   }
 
-  console.log('✅ Heartbeat completado');
+  logger.success('Heartbeat completado');
 }
 
 async function runModeA(config: HeartbeatConfig, verbose: boolean): Promise<void> {
-  console.log('🔧 Modo A: Dominio de GitHub');
+  logger.info('🔧 Modo A: Dominio de GitHub');
   
   try {
     // Verificar estado de git
     const gitStatus = execSync('git status --porcelain', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
     
     if (gitStatus.trim()) {
-      console.log('📝 Cambios pendientes detectados');
+      logger.warn('📝 Cambios pendientes detectados');
       if (verbose) {
-        console.log(gitStatus);
+        logger.debug(gitStatus);
       }
     } else {
-      console.log('✓ Repositorio limpio');
+      logger.success('Repositorio limpio');
     }
 
     // Verificar autenticación GitHub
     try {
       execSync('gh auth status', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
-      console.log('✓ Autenticación GitHub verificada');
+      logger.success('Autenticación GitHub verificada');
     } catch {
-      console.log('⚠ Autenticación GitHub no disponible');
+      logger.warn('⚠️ Autenticación GitHub no disponible');
     }
   } catch (error) {
     // No es un repositorio git, está bien para proyectos nuevos
-    console.log('ℹ No es un repositorio git');
+    logger.info('ℹ️ No es un repositorio git');
   }
 }
 
 async function runModeB(config: HeartbeatConfig, verbose: boolean): Promise<void> {
-  console.log('🔍 Modo B: Exploración de Proyectos');
+  logger.info('🔍 Modo B: Exploración de Proyectos');
   
   // Listar archivos del proyecto
   const projectDir = process.cwd();
   const files = fs.readdirSync(projectDir).filter(f => !f.startsWith('.'));
   
-  console.log(`📁 Archivos en el proyecto (${files.length}):`);
+  logger.info(`📁 Archivos en el proyecto (${files.length}):`);
   if (verbose) {
-    files.forEach(f => console.log(`   - ${f}`));
+    files.forEach(f => logger.debug(`   - ${f}`));
   } else {
-    console.log(`   ${files.slice(0, 5).join(', ')}${files.length > 5 ? '...' : ''}`);
+    logger.info(`   ${files.slice(0, 5).join(', ')}${files.length > 5 ? '...' : ''}`);
   }
 
   // Verificar documentación
   const hasGoals = fs.existsSync(path.join(projectDir, 'GOALS.md'));
   const hasMemory = fs.existsSync(path.join(projectDir, 'MEMORY.md'));
   
-  console.log(`📚 Documentación:`);
-  console.log(`   GOALS.md: ${hasGoals ? '✓' : '✗'}`);
-  console.log(`   MEMORY.md: ${hasMemory ? '✓' : '✗'}`);
+  logger.info('📚 Documentación:');
+  logger.info(`   GOALS.md: ${hasGoals ? '✓' : '✗'}`);
+  logger.info(`   MEMORY.md: ${hasMemory ? '✓' : '✗'}`);
 }

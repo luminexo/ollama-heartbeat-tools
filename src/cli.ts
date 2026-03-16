@@ -8,13 +8,33 @@ import { askCommand } from './commands/ask';
 import { configCommand } from './commands/config';
 import { validateCommand } from './commands/validate';
 import { remoteCommand } from './commands/remote';
+import { logger } from './logger';
 
 const program = new Command();
 
 program
   .name('heartbeat')
   .description('Toolkit de utilidades para sistemas de heartbeat automatizados usando Ollama')
-  .version('0.1.0');
+  .version('0.1.0')
+  .option('-v, --verbose', 'Mostrar información detallada (debug level)', false)
+  .option('-q, --quiet', 'Solo mostrar errores', false)
+  .option('--log-file <path>', 'Archivo de log para persistencia')
+  .option('--json-logs', 'Formato de log JSON (para CI/CD)', false)
+  .hook('preAction', (thisCommand) => {
+    const options = thisCommand.opts();
+    if (options.quiet) {
+      logger.setLevel('error');
+    } else if (options.verbose) {
+      logger.setLevel('debug');
+    }
+    if (options.logFile) {
+      logger.setFile(options.logFile);
+    }
+    if (options.jsonLogs) {
+      logger.setJsonMode(true);
+      logger.setColors(false);
+    }
+  });
 
 // Comandos principales
 program

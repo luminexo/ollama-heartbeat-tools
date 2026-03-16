@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import { logger } from '../logger';
 
 interface StatusOptions {
   json: boolean;
@@ -23,8 +24,8 @@ export function statusCommand(options: StatusOptions) {
   const configPath = findConfigFile();
   
   if (!configPath) {
-    console.log('⚠ No se encontró archivo de configuración heartbeat.config.json');
-    console.log('💡 Ejecuta "heartbeat init" para crear un nuevo proyecto');
+    logger.warn('No se encontró archivo de configuración heartbeat.config.json');
+    logger.info('💡 Ejecuta "heartbeat init" para crear un nuevo proyecto');
     return;
   }
 
@@ -108,36 +109,36 @@ function loadStatus(configPath: string, projectDir: string): ProjectStatus {
 }
 
 function printStatus(status: ProjectStatus) {
-  console.log('📊 Estado del Sistema de Heartbeats');
-  console.log('');
-  console.log('┌─────────────────────────────────────┐');
-  console.log(`│ Proyecto: ${status.name.padEnd(26)}│`);
-  console.log(`│ Versión:  ${status.version.padEnd(26)}│`);
-  console.log('└─────────────────────────────────────┘');
-  console.log('');
+  logger.info('📊 Estado del Sistema de Heartbeats');
+  logger.info('');
+  logger.info('┌─────────────────────────────────────┐');
+  logger.info(`│ Proyecto: ${status.name.padEnd(26)}│`);
+  logger.info(`│ Versión:  ${status.version.padEnd(26)}│`);
+  logger.info('└─────────────────────────────────────┘');
+  logger.info('');
   
-  console.log('💓 Heartbeats');
-  console.log(`   Contador actual: ${status.heartbeatCount}`);
-  console.log(`   Modo actual:    ${status.heartbeatCount % 2 === 1 ? 'A (Dominio GitHub)' : 'B (Exploración)'}`);
-  console.log('');
+  logger.info('💓 Heartbeats');
+  logger.info(`   Contador actual: ${status.heartbeatCount}`);
+  logger.info(`   Modo actual:    ${status.heartbeatCount % 2 === 1 ? 'A (Dominio GitHub)' : 'B (Exploración)'}`);
+  logger.info('');
   
-  console.log('📁 Documentación');
-  console.log(`   GOALS.md:   ${status.hasGoals ? '✓' : '✗'}`);
-  console.log(`   MEMORY.md:  ${status.hasMemory ? '✓' : '✗'}`);
-  console.log('');
+  logger.info('📁 Documentación');
+  logger.info(`   GOALS.md:   ${status.hasGoals ? '✓' : '✗'}`);
+  logger.info(`   MEMORY.md:  ${status.hasMemory ? '✓' : '✗'}`);
+  logger.info('');
   
-  console.log('🔧 Git');
+  logger.info('🔧 Git');
   if (status.isGitRepo) {
-    console.log(`   Branch:     ${status.gitBranch}`);
-    console.log(`   Limpio:     ${status.gitClean ? '✓' : '✗ (cambios pendientes)'}`);
+    logger.info(`   Branch:     ${status.gitBranch}`);
+    logger.info(`   Limpio:     ${status.gitClean ? '✓' : '✗ (cambios pendientes)'}`);
   } else {
-    console.log('   No es un repositorio git');
+    logger.info('   No es un repositorio git');
   }
-  console.log('');
+  logger.info('');
   
-  console.log('🦙 Ollama');
-  console.log(`   Habilitado: ${status.ollamaEnabled ? '✓' : '✗'}`);
+  logger.info('🦙 Ollama');
+  logger.info(`   Habilitado: ${status.ollamaEnabled ? '✓' : '✗'}`);
   if (status.ollamaEnabled) {
-    console.log(`   Modelo:     ${status.ollamaModel}`);
+    logger.info(`   Modelo:     ${status.ollamaModel}`);
   }
 }

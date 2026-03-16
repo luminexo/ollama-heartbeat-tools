@@ -3,8 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-// Mock console.log and process.exit
+// Mock console.log, console.error, console.warn and process.exit
 const mockLog = jest.spyOn(console, 'log').mockImplementation();
+const mockError = jest.spyOn(console, 'error').mockImplementation();
+const mockWarn = jest.spyOn(console, 'warn').mockImplementation();
 const mockExit = jest.spyOn(process, 'exit').mockImplementation();
 
 describe('validateCommand', () => {
@@ -13,6 +15,8 @@ describe('validateCommand', () => {
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'heartbeat-validate-test-'));
     mockLog.mockClear();
+    mockError.mockClear();
+    mockWarn.mockClear();
     mockExit.mockClear();
   });
 
@@ -27,7 +31,7 @@ describe('validateCommand', () => {
     validateCommand({ verbose: false, fix: false });
     
     expect(mockExit).toHaveBeenCalledWith(1);
-    expect(mockLog).toHaveBeenCalledWith(expect.stringContaining('heartbeat.config.json'));
+    expect(mockError).toHaveBeenCalledWith(expect.stringContaining('heartbeat.config.json'));
     
     process.chdir(originalCwd);
   });
@@ -76,7 +80,7 @@ describe('validateCommand', () => {
     validateCommand({ verbose: false, fix: false });
     
     expect(mockExit).toHaveBeenCalledWith(1);
-    expect(mockLog).toHaveBeenCalledWith(expect.stringContaining('Error de sintaxis JSON'));
+    expect(mockError).toHaveBeenCalledWith(expect.stringContaining('Error de sintaxis JSON'));
     
     process.chdir(originalCwd);
   });
@@ -97,7 +101,7 @@ describe('validateCommand', () => {
     validateCommand({ verbose: false, fix: false });
     
     expect(mockExit).toHaveBeenCalledWith(1);
-    expect(mockLog).toHaveBeenCalledWith(expect.stringContaining('name'));
+    expect(mockError).toHaveBeenCalledWith(expect.stringContaining('name'));
     
     process.chdir(originalCwd);
   });
@@ -121,7 +125,7 @@ describe('validateCommand', () => {
     
     validateCommand({ verbose: false, fix: false });
     
-    expect(mockLog).toHaveBeenCalledWith(expect.stringContaining('Ollama habilitado pero sin modelo'));
+    expect(mockWarn).toHaveBeenCalledWith(expect.stringContaining('Ollama habilitado pero sin modelo'));
     
     process.chdir(originalCwd);
   });
@@ -148,7 +152,7 @@ describe('validateCommand', () => {
     validateCommand({ verbose: false, fix: false });
     
     expect(mockExit).toHaveBeenCalledWith(1);
-    expect(mockLog).toHaveBeenCalledWith(expect.stringContaining('URL de Ollama inválida'));
+    expect(mockError).toHaveBeenCalledWith(expect.stringContaining('URL de Ollama inválida'));
     
     process.chdir(originalCwd);
   });
@@ -174,7 +178,7 @@ describe('validateCommand', () => {
     
     validateCommand({ verbose: false, fix: false });
     
-    expect(mockLog).toHaveBeenCalledWith(expect.stringContaining('No se encontraron objetivos'));
+    expect(mockWarn).toHaveBeenCalledWith(expect.stringContaining('No se encontraron objetivos'));
     
     process.chdir(originalCwd);
   });
@@ -227,7 +231,7 @@ describe('validateCommand', () => {
     validateCommand({ verbose: false, fix: false });
     
     expect(mockExit).toHaveBeenCalledWith(1);
-    expect(mockLog).toHaveBeenCalledWith(expect.stringContaining('Formato de contador inválido'));
+    expect(mockError).toHaveBeenCalledWith(expect.stringContaining('Formato de contador inválido'));
     
     process.chdir(originalCwd);
   });
