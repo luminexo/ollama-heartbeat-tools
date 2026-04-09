@@ -8,6 +8,8 @@ import { askCommand } from './commands/ask';
 import { configCommand } from './commands/config';
 import { validateCommand } from './commands/validate';
 import { remoteCommand } from './commands/remote';
+import { notifyCommand } from './commands/notify';
+import { providerCommand } from './commands/provider';
 import { logger } from './logger';
 
 const program = new Command();
@@ -100,5 +102,26 @@ program
   .option('--validate', 'Validar URL remota', false)
   .option('-v, --verbose', 'Mostrar información detallada', false)
   .action(remoteCommand);
+
+program
+  .command('notify')
+  .description('Gestiona notificaciones webhook (Slack, Discord, Telegram)')
+  .option('--test', 'Enviar mensaje de prueba', false)
+  .option('--list', 'Listar webhooks configurados', false)
+  .option('--webhook <name>', 'Webhook específico a usar')
+  .option('--message <text>', 'Mensaje a enviar')
+  .action(notifyCommand);
+
+program
+  .command('provider')
+  .description('Gestiona proveedores LLM (Ollama, OpenAI, Anthropic)')
+  .option('--list', 'Listar proveedores configurados', false)
+  .option('--provider <name>', 'Configurar proveedor (ollama/openai/anthropic)')
+  .option('--api-key <key>', 'Establecer API key')
+  .option('--base-url <url>', 'Establecer URL base')
+  .option('--default-model <model>', 'Establecer modelo por defecto')
+  .option('--test', 'Probar proveedor configurado', false)
+  .option('--prompt <text>', 'Prompt para probar')
+  .action(providerCommand);
 
 program.parse();
