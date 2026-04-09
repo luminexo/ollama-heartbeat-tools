@@ -8,6 +8,7 @@ import { askCommand } from './commands/ask';
 import { configCommand } from './commands/config';
 import { validateCommand } from './commands/validate';
 import { remoteCommand } from './commands/remote';
+import { notifyCommand } from './commands/notify';
 import { logger } from './logger';
 
 const program = new Command();
@@ -100,5 +101,14 @@ program
   .option('--validate', 'Validar URL remota', false)
   .option('-v, --verbose', 'Mostrar información detallada', false)
   .action(remoteCommand);
+
+program
+  .command('notify')
+  .description('Gestiona notificaciones webhook (Slack, Discord, Telegram)')
+  .option('--test', 'Enviar mensaje de prueba', false)
+  .option('--list', 'Listar webhooks configurados', false)
+  .option('--webhook <name>', 'Webhook específico a usar')
+  .option('--message <text>', 'Mensaje a enviar')
+  .action(notifyCommand);
 
 program.parse();
