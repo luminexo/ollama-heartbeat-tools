@@ -8,6 +8,7 @@ import { askCommand } from './commands/ask';
 import { configCommand } from './commands/config';
 import { validateCommand } from './commands/validate';
 import { remoteCommand } from './commands/remote';
+import { dashboardCommand } from './commands/dashboard';
 import { logger } from './logger';
 
 const program = new Command();
@@ -100,5 +101,11 @@ program
   .option('--validate', 'Validar URL remota', false)
   .option('-v, --verbose', 'Mostrar información detallada', false)
   .action(remoteCommand);
+
+program
+  .command('dashboard')
+  .description('Inicia el servidor web de dashboard de estado')
+  .option('-p, --port <port>', 'Puerto del servidor', '3000')
+  .action(dashboardCommand);
 
 program.parse();
