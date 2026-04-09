@@ -6,10 +6,26 @@ export { askCommand } from './commands/ask';
 export { configCommand } from './commands/config';
 export { validateCommand } from './commands/validate';
 export { remoteCommand } from './commands/remote';
+export { notifyCommand } from './commands/notify';
+export { providerCommand } from './commands/provider';
 
-// Ollama client
-export { OllamaClient } from './ollama/client';
-export type { OllamaModel, OllamaGenerateRequest, OllamaGenerateResponse, OllamaStatus } from './ollama/types';
+// Webhooks
+export { WebhookClient, WebhookManager } from './webhooks';
+export type { WebhookConfig, WebhookMessage, WebhookProvider } from './webhooks';
+
+// LLM Clients
+export { 
+  LLMClientFactory, 
+  OllamaLLMClient, 
+  OpenAILLMClient, 
+  AnthropicLLMClient 
+} from './llm';
+export type { 
+  LLMClient, 
+  LLMCompletionOptions, 
+  LLMCompletionResponse, 
+  LLMProviderConfig 
+} from './llm/types';
 
 // Remote config
 export { RemoteConfigLoader, formatBytes } from './config/remote';
