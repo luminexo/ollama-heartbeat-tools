@@ -6,6 +6,11 @@ export { askCommand } from './commands/ask';
 export { configCommand } from './commands/config';
 export { validateCommand } from './commands/validate';
 export { remoteCommand } from './commands/remote';
+export { notifyCommand } from './commands/notify';
+
+// Webhooks
+export { WebhookClient, WebhookManager } from './webhooks';
+export type { WebhookConfig, WebhookMessage, WebhookProvider } from './webhooks';
 
 // Ollama client
 export { OllamaClient } from './ollama/client';
