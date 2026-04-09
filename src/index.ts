@@ -6,6 +6,7 @@ export { askCommand } from './commands/ask';
 export { configCommand } from './commands/config';
 export { validateCommand } from './commands/validate';
 export { remoteCommand } from './commands/remote';
+export { dashboardCommand } from './commands/dashboard';
 
 // Ollama client
 export { OllamaClient } from './ollama/client';
@@ -14,6 +15,10 @@ export type { OllamaModel, OllamaGenerateRequest, OllamaGenerateResponse, Ollama
 // Remote config
 export { RemoteConfigLoader, formatBytes } from './config/remote';
 export type { RemoteConfigOptions, RemoteConfigResult } from './config/remote';
+
+// Dashboard
+export { startDashboard } from './dashboard';
+export type { DashboardOptions, HealthStatus, ProjectStatusData } from './dashboard';
 
 // Logger
 export { Logger, logger } from './logger';
